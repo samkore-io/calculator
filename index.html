@@ -5,17 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Calculator.io</title>
     
-    <!-- Links the app settings file -->
     <link rel="manifest" href="manifest.json">
     
-    <!-- Forces iPhones to open it in full-screen app mode -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Calculator">
-    <link rel="apple-touch-icon" href="icon-192.png">
 
     <style>
-        /* Resets margins and locks screen scaling */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -25,7 +21,6 @@
             user-select: none;
         }
 
-        /* Pure black background that takes up the entire mobile screen */
         body {
             background-color: #000000;
             color: #ffffff;
@@ -37,7 +32,6 @@
             overflow: hidden;
         }
 
-        /* Fixed Mobile Wrapper: Dynamic sizing ensures it fills mobile screens perfectly */
         .calculator-app {
             width: 100%;
             max-width: 430px; 
@@ -47,9 +41,9 @@
             padding: 24px;
             justify-content: flex-end;
             background-color: #000000;
+            position: relative;
         }
 
-        /* Matrix Green Number Screen */
         .display {
             flex-grow: 1;
             display: flex;
@@ -65,7 +59,6 @@
             overflow-y: hidden;
         }
 
-        /* Grid Layout: Completely fixed sizing bugs across different phone widths */
         .grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -73,7 +66,6 @@
             width: 100%;
         }
 
-        /* Button Fixes: Large thumb tap targets that do not scale out of proportion */
         button {
             background-color: #1A1A1A;
             border: none;
@@ -81,7 +73,7 @@
             color: #ffffff;
             font-size: 1.8rem;
             font-weight: 500;
-            aspect-ratio: 1 / 1; /* Keeps buttons perfectly square on all screens */
+            aspect-ratio: 1 / 1;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -89,13 +81,11 @@
             transition: background-color 0.1s ease, transform 0.05s ease;
         }
 
-        /* Instant mobile touch feedback */
         button:active {
             background-color: #333333;
             transform: scale(0.95);
         }
 
-        /* Dark Green Utility Buttons (AC, Clear) */
         button.action-btn {
             background-color: #003318;
             color: #00FF66;
@@ -105,7 +95,6 @@
             background-color: #004D26;
         }
 
-        /* Bright Green Operator Buttons (+, -, =, ⌫) */
         button.operator-btn {
             background-color: #00FF66;
             color: #000000;
@@ -116,14 +105,12 @@
             background-color: #00CC52;
         }
 
-        /* Layout Override: Stretches the '0' button seamlessly over 2 grid slots */
         button.zero-btn {
             grid-column: span 2;
             aspect-ratio: auto;
             height: 100%;
         }
 
-        /* Bottom setup instruction hint */
         .install-tip {
             text-align: center;
             font-size: 0.75rem;
@@ -131,15 +118,157 @@
             margin-top: 20px;
             letter-spacing: 0.5px;
         }
+
+        /* 👑 HIDDEN ADMIN MENU VIEW */
+        .secret-menu {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            z-index: 10;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            border-radius: inherit;
+        }
+
+        .secret-menu h2 {
+            color: #00FF66;
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+            letter-spacing: 1px;
+        }
+
+        .menu-row {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            background: #111;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #222;
+        }
+
+        .menu-label {
+            font-size: 1rem;
+            color: #ccc;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #333;
+            transition: .3s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #00FF66;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        .secret-input {
+            background: #222;
+            border: 1px solid #00FF66;
+            color: #00FF66;
+            padding: 10px;
+            border-radius: 8px;
+            width: 100px;
+            font-size: 1.2rem;
+            text-align: center;
+            font-weight: bold;
+            user-select: text !important;
+        }
+
+        .close-btn {
+            margin-top: 20px;
+            background: #00FF66;
+            color: #000;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 80%;
+            max-width: 200px;
+            aspect-ratio: auto;
+        }
+        
+        .credit {
+            font-size: 0.65rem;
+            color: #444;
+            margin-top: 30px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
 
     <div class="calculator-app">
-        <!-- Display Screen -->
+        <!-- Control Panel Modal Overlay -->
+        <div class="secret-menu" id="secretMenu">
+            <h2>Stealth Control Panel</h2>
+            
+            <div class="menu-row">
+                <span class="menu-label">Magic Trick Mode</span>
+                <label class="switch">
+                    <input type="checkbox" id="magicToggle" checked onchange="toggleMagicMode()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="menu-row">
+                <span class="menu-label">Target Force Number</span>
+                <input type="number" id="magicNumberInput" class="secret-input" value="73" oninput="updateMagicNumber(this.value)">
+            </div>
+
+            <button class="close-btn" onclick="closeSecretMenu()">Exit Panel</button>
+            <div class="credit">AI Engineering Co-Pilot Setup</div>
+        </div>
+
+        <!-- Numeric Interface Screen -->
         <div class="display" id="display">0</div>
         
-        <!-- Calculator Button Array -->
+        <!-- Keypad Input Array -->
         <div class="grid">
             <button class="action-btn" onclick="clearDisplay()">AC</button>
             <button class="action-btn" onclick="appendOperator('/')">÷</button>
@@ -165,13 +294,21 @@
             <button onclick="appendNumber('.')">.</button>
         </div>
         
-        <div class="install-tip">Tap browser menu → "Add to Home Screen" to use full app view</div>
+        <div class="install-tip">Calculator Engine v2.4</div>
     </div>
 
+    <!-- 🔮 ALL LOGIC EMBEDDED INSIDE SACRED TAGS TO AVOID EXPOSURE -->
     <script>
         const display = document.getElementById('display');
+        const secretMenu = document.getElementById('secretMenu');
+        const magicToggle = document.getElementById('magicToggle');
+        
         let currentInput = '0';
         let shouldReset = false;
+
+        const MASTER_PASSCODE = "9876"; 
+        let isMagicModeActive = true;   
+        let forcedResult = "73";        
 
         function appendNumber(num) {
             if (currentInput === '0' || shouldReset) {
@@ -181,6 +318,7 @@
                 currentInput += num;
             }
             updateDisplay();
+            checkPasscode();
         }
 
         function appendOperator(op) {
@@ -200,35 +338,3 @@
         }
 
         function deleteLast() {
-            if (currentInput.length > 1) {
-                currentInput = currentInput.slice(0, -1);
-            } else {
-                currentInput = '0';
-            }
-            updateDisplay();
-        }
-
-        function calculate() {
-            try {
-                let sanitizedInput = currentInput.replace(/×/g, '*').replace(/÷/g, '/');
-                let result = eval(sanitizedInput);
-                
-                // Prevents infinite JavaScript rounding errors (e.g. 0.1 + 0.2)
-                currentInput = String(Number(result.toFixed(8))); 
-                shouldReset = true;
-                updateDisplay();
-            } catch (e) {
-                display.innerText = 'Error';
-                currentInput = '0';
-                shouldReset = true;
-            }
-        }
-
-        function updateDisplay() {
-            display.innerText = currentInput;
-            // Automatically scrolls screen display to the right as numbers get longer
-            display.scrollLeft = display.scrollWidth;
-        }
-    </script>
-</body>
-</html>
