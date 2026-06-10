@@ -121,7 +121,7 @@
             letter-spacing: 0.5px;
         }
 
-        /* 👑 SECRET MENU VIEW */
+        /* 👑 SECRET ADMIN SCREEN VIEW */
         .secret-menu {
             display: none;
             position: absolute;
@@ -246,31 +246,31 @@
 <body>
 
     <div class="calculator-app">
-        <!-- Control Panel -->
+        <!-- Control Panel Panel -->
         <div class="secret-menu" id="secretMenu">
             <h2>Stealth Control Panel</h2>
             
             <div class="menu-row">
                 <span class="menu-label">Magic Trick Mode</span>
                 <label class="switch">
-                    <input type="checkbox" id="magicToggle" checked onchange="toggleMagicMode()">
+                    <input type="checkbox" id="magicToggle" checked>
                     <span class="slider"></span>
                 </label>
             </div>
 
             <div class="menu-row">
                 <span class="menu-label">Target Force Number</span>
-                <input type="number" id="magicNumberInput" class="secret-input" value="73" oninput="updateMagicNumber(this.value)">
+                <input type="number" id="magicNumberInput" class="secret-input" value="73">
             </div>
 
             <button class="close-btn" onclick="closeSecretMenu()">Exit Panel</button>
             <div class="credit">AI Engineering Co-Pilot Setup</div>
         </div>
 
-        <!-- Output Display Screen -->
+        <!-- Numbers Window -->
         <div class="display" id="display">0</div>
         
-        <!-- Keypad Interface -->
+        <!-- Main Panel Matrix Keys -->
         <div class="grid">
             <button class="action-btn" onclick="clearDisplay()">AC</button>
             <button class="action-btn" onclick="appendOperator('/')">÷</button>
@@ -296,7 +296,7 @@
             <button onclick="appendNumber('.')">.</button>
         </div>
         
-        <div class="install-tip">Calculator Engine v2.5</div>
+        <div class="install-tip">Calculator Engine v2.6</div>
     </div>
 
     <script>
@@ -308,13 +308,10 @@
         let currentInput = '0';
         let shouldReset = false;
 
-        // 🔐 PASSCODE SETTINGS
-        const OPEN_MENU_CODE = "9876";   // Open UI Control Panel
-        const QUICK_ON_CODE = "1234";    // Secret Quick-Turn ON Trick Mode
-        const QUICK_OFF_CODE = "5676";   // Secret Quick-Turn OFF Trick Mode (Uses 5676 to dodge standard 5678 finger trails)
-
-        let isMagicModeActive = true;   
-        let forcedResult = "73";        
+        // 🔐 FIXED INTERACTIVE TRIGGERS
+        const OPEN_MENU_CODE = "9876";   
+        const QUICK_ON_CODE = "1234";    
+        const QUICK_OFF_CODE = "5676";   
 
         function appendNumber(num) {
             if (currentInput === '0' || shouldReset) {
@@ -329,3 +326,13 @@
 
         function appendOperator(op) {
             shouldReset = false;
+            const lastChar = currentInput.slice(-1);
+            if (['+', '-', '*', '/'].includes(lastChar)) {
+                currentInput = currentInput.slice(0, -1) + op;
+            } else {
+                currentInput += op;
+            }
+            updateDisplay();
+        }
+
+        function clearDisplay() {
