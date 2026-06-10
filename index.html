@@ -1,344 +1,574 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Calculator.io</title>
-    
-    <link rel="manifest" href="manifest.json">
-    
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Calculator">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Calculator</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-        }
+    body {
+      min-height: 100vh;
+      background: #1a1a2e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
 
-        body {
-            background-color: #000000;
-            color: #ffffff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
-            transition: background-color 0.3s ease;
-        }
+    /* ── CALCULATOR SHELL ── */
+    .calc-wrapper {
+      position: relative;
+      width: 320px;
+    }
 
-        .calculator-app {
-            width: 100%;
-            max-width: 430px; 
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            padding: 24px;
-            justify-content: flex-end;
-            background-color: transparent;
-            position: relative;
-        }
+    .calc {
+      background: #16213e;
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05);
+    }
 
-        .display {
-            flex-grow: 1;
-            display: flex;
-            align-items: flex-end;
-            justify-content: flex-end;
-            padding: 20px 10px;
-            font-size: clamp(2.8rem, 12vw, 5rem);
-            font-weight: 300;
-            color: #00FF66;
-            text-align: right;
-            white-space: nowrap;
-            overflow-x: auto;
-            overflow-y: hidden;
-            transition: color 0.3s ease;
-        }
+    /* ── DISPLAY ── */
+    .display-wrap {
+      background: #0f3460;
+      border-radius: 14px;
+      padding: 16px 20px 12px;
+      margin-bottom: 16px;
+      min-height: 90px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: flex-end;
+      overflow: hidden;
+      position: relative;
+    }
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 14px;
-            width: 100%;
-        }
+    .magic-badge {
+      position: absolute;
+      top: 8px;
+      left: 10px;
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #e94560;
+      opacity: 0;
+      transition: opacity 0.4s;
+      font-weight: 700;
+    }
+    .magic-badge.visible { opacity: 1; }
 
-        button {
-            background-color: #1A1A1A;
-            border: none;
-            border-radius: 18px;
-            color: #ffffff;
-            font-size: 1.8rem;
-            font-weight: 500;
-            aspect-ratio: 1 / 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            transition: background-color 0.1s ease, transform 0.05s ease;
-        }
+    .display-expr {
+      font-size: 13px;
+      color: rgba(255,255,255,0.35);
+      min-height: 18px;
+      word-break: break-all;
+      text-align: right;
+    }
 
-        button:active {
-            background-color: #333333;
-            transform: scale(0.95);
-        }
+    #display {
+      font-size: 40px;
+      color: #ffffff;
+      font-weight: 300;
+      letter-spacing: -1px;
+      word-break: break-all;
+      text-align: right;
+      line-height: 1.1;
+      transition: color 0.3s;
+    }
+    #display.magic-result { color: #e94560; }
 
-        button.action-btn {
-            background-color: #003318;
-            color: #00FF66;
-        }
-        
-        button.action-btn:active {
-            background-color: #004D26;
-        }
+    /* ── BUTTONS ── */
+    .btn-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
 
-        button.operator-btn {
-            background-color: #00FF66;
-            color: #000000;
-            font-weight: 700;
-        }
+    button {
+      border: none;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: 500;
+      height: 62px;
+      cursor: pointer;
+      transition: transform 0.08s, filter 0.1s;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    button:active { transform: scale(0.93); filter: brightness(1.2); }
 
-        button.operator-btn:active {
-            background-color: #00CC52;
-        }
+    .btn-num {
+      background: #1a1a40;
+      color: #ffffff;
+    }
+    .btn-op {
+      background: #533483;
+      color: #ffffff;
+    }
+    .btn-eq {
+      background: #e94560;
+      color: #ffffff;
+      grid-row: span 2;
+    }
+    .btn-clear {
+      background: #0f3460;
+      color: #53c0f0;
+    }
+    .btn-back {
+      background: #0f3460;
+      color: #e94560;
+    }
+    .btn-zero {
+      grid-column: span 2;
+    }
 
-        button.zero-btn {
-            grid-column: span 2;
-            aspect-ratio: auto;
-            height: 100%;
-        }
+    /* ── ADMIN OVERLAY ── */
+    #adminOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(6px);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+    #adminOverlay.open { display: flex; }
 
-        .install-tip {
-            text-align: center;
-            font-size: 0.75rem;
-            color: #444444;
-            margin-top: 20px;
-            letter-spacing: 0.5px;
-        }
+    .admin-panel {
+      background: #16213e;
+      border: 1px solid rgba(233,69,96,0.4);
+      border-radius: 20px;
+      padding: 28px 24px;
+      width: 300px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+      position: relative;
+    }
 
-        /* 👑 CONTROL OVERLAY GRAPHICS */
-        .secret-menu {
-            display: none;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.98);
-            z-index: 10;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 30px;
-        }
+    .admin-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 22px;
+    }
+    .admin-title {
+      font-size: 13px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #e94560;
+      font-weight: 700;
+    }
+    .close-btn {
+      background: rgba(233,69,96,0.15);
+      color: #e94560;
+      border: none;
+      border-radius: 8px;
+      width: 32px;
+      height: 32px;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .close-btn:active { transform: scale(0.9); }
 
-        .secret-menu h2 {
-            color: #00FF66;
-            margin-bottom: 25px;
-            font-size: 1.8rem;
-            letter-spacing: 1px;
-        }
+    .admin-row {
+      margin-bottom: 18px;
+    }
+    .admin-label {
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      margin-bottom: 8px;
+      display: block;
+    }
 
-        .menu-row {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            background: #111;
-            padding: 15px;
-            border-radius: 12px;
-            border: 1px solid #222;
-        }
+    /* Toggle */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #0f3460;
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+    .toggle-label {
+      color: #fff;
+      font-size: 14px;
+    }
+    .toggle {
+      position: relative;
+      width: 44px;
+      height: 24px;
+    }
+    .toggle input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0.15);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .slider::before {
+      content: '';
+      position: absolute;
+      width: 18px; height: 18px;
+      left: 3px; top: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.3s;
+    }
+    .toggle input:checked + .slider { background: #e94560; }
+    .toggle input:checked + .slider::before { transform: translateX(20px); }
 
-        .menu-label {
-            font-size: 1rem;
-            color: #ccc;
-        }
+    /* Force result input */
+    .force-input {
+      width: 100%;
+      background: #0f3460;
+      border: 1px solid rgba(83,52,131,0.5);
+      border-radius: 10px;
+      color: #fff;
+      font-size: 20px;
+      font-weight: 300;
+      padding: 12px 14px;
+      outline: none;
+      text-align: center;
+      transition: border-color 0.2s;
+    }
+    .force-input:focus { border-color: #e94560; }
 
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 50px;
-            height: 26px;
-        }
+    .admin-save {
+      width: 100%;
+      background: #e94560;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      height: 44px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      margin-top: 6px;
+      transition: opacity 0.2s;
+    }
+    .admin-save:hover { opacity: 0.88; }
 
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
+    .admin-codes {
+      background: rgba(83,52,131,0.2);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.8;
+    }
+    .admin-codes span { color: #53c0f0; font-weight: 600; }
 
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #333;
-            transition: .3s;
-            border-radius: 34px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .3s;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider {
-            background-color: #00FF66;
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(24px);
-        }
-
-        .secret-input {
-            background: #222;
-            border: 1px solid #00FF66;
-            color: #00FF66;
-            padding: 10px;
-            border-radius: 8px;
-            width: 120px;
-            font-size: 1.2rem;
-            text-align: center;
-            font-weight: bold;
-            user-select: text !important;
-            -webkit-user-select: text !important;
-        }
-
-        .close-btn {
-            margin-top: 20px;
-            background: #00FF66;
-            color: #000;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 25px;
-            font-weight: bold;
-            font-size: 1rem;
-            cursor: pointer;
-            width: 80%;
-            max-width: 200px;
-            aspect-ratio: auto;
-        }
-        
-        .credit {
-            font-size: 0.65rem;
-            color: #444;
-            margin-top: 30px;
-            text-align: center;
-        }
-    </style>
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #533483;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      opacity: 0;
+      transition: opacity 0.3s, transform 0.3s;
+      pointer-events: none;
+      z-index: 200;
+      white-space: nowrap;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  </style>
 </head>
 <body>
 
-    <div class="calculator-app">
-        <!-- Dashboard panel -->
-        <div class="secret-menu" id="secretMenu">
-            <h2>Stealth Control Panel</h2>
-            
-            <div class="menu-row">
-                <span class="menu-label">Magic Trick Mode</span>
-                <label class="switch">
-                    <input type="checkbox" id="magicToggle" checked>
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div class="menu-row">
-                <span class="menu-label">Target Force Number</span>
-                <input type="number" id="magicNumberInput" class="secret-input" value="73">
-            </div>
-
-            <button class="close-btn" onclick="closeSecretMenu()">Exit Panel</button>
-            <div class="credit">AI Engineering Co-Pilot Setup</div>
-        </div>
-
-        <!-- System View Area -->
-        <div class="display" id="display">0</div>
-        
-        <!-- Keypad Interface -->
-        <div class="grid">
-            <button class="action-btn" onclick="clearDisplay()">AC</button>
-            <button class="action-btn" onclick="appendOperator('/')">÷</button>
-            <button class="action-btn" onclick="appendOperator('*')">×</button>
-            <button class="operator-btn" onclick="deleteLast()">⌫</button>
-
-            <button onclick="appendNumber('7')">7</button>
-            <button onclick="appendNumber('8')">8</button>
-            <button onclick="appendNumber('9')">9</button>
-            <button class="operator-btn" onclick="appendOperator('-')">−</button>
-
-            <button onclick="appendNumber('4')">4</button>
-            <button onclick="appendNumber('5')">5</button>
-            <button onclick="appendNumber('6')">6</button>
-            <button class="operator-btn" onclick="appendOperator('+')">+</button>
-
-            <button onclick="appendNumber('1')">1</button>
-            <button onclick="appendNumber('2')">2</button>
-            <button onclick="appendNumber('3')">3</button>
-            <button class="operator-btn" style="grid-row: span 2; height: 100%; aspect-ratio: auto;" onclick="calculate()">=</button>
-
-            <button class="zero-btn" onclick="appendNumber('0')">0</button>
-            <button onclick="appendNumber('.')">.</button>
-        </div>
-        
-        <div class="install-tip">Calculator Engine v2.7</div>
+<!-- ═══════════════ CALCULATOR ═══════════════ -->
+<div class="calc-wrapper">
+  <div class="calc">
+    <!-- Display -->
+    <div class="display-wrap">
+      <div class="magic-badge" id="magicBadge">✦ Magic On</div>
+      <div class="display-expr" id="expr"></div>
+      <div id="display">0</div>
     </div>
 
-    <script>
-        const display = document.getElementById('display');
-        const secretMenu = document.getElementById('secretMenu');
-        
-        let currentInput = '0';
-        let shouldReset = false;
+    <!-- Buttons -->
+    <div class="btn-grid">
+      <button class="btn-clear" onclick="clearAll()">AC</button>
+      <button class="btn-op"    onclick="appendOp('/')">÷</button>
+      <button class="btn-op"    onclick="appendOp('*')">×</button>
+      <button class="btn-back"  onclick="backspace()">⌫</button>
 
-        // 🔐 STEALTH COMBINATION CODES
-        const OPEN_MENU_CODE = "9876";   
-        const QUICK_ON_CODE = "1234";    
-        const QUICK_OFF_CODE = "5676";   
+      <button class="btn-num"  onclick="appendNum('7')">7</button>
+      <button class="btn-num"  onclick="appendNum('8')">8</button>
+      <button class="btn-num"  onclick="appendNum('9')">9</button>
+      <button class="btn-op"   onclick="appendOp('-')">−</button>
 
-        // Safe Fallback Core Configurations
-        let backgroundMagicState = true;
-        let backgroundForcedResult = "73";
+      <button class="btn-num"  onclick="appendNum('4')">4</button>
+      <button class="btn-num"  onclick="appendNum('5')">5</button>
+      <button class="btn-num"  onclick="appendNum('6')">6</button>
+      <button class="btn-op"   onclick="appendOp('+')">+</button>
 
-        function appendNumber(num) {
-            if (currentInput === '0' || shouldReset) {
-                currentInput = num;
-                shouldReset = false;
-            } else {
-                currentInput += num;
-            }
-            updateDisplay();
-            checkSecretCodes();
+      <button class="btn-num"  onclick="appendNum('1')">1</button>
+      <button class="btn-num"  onclick="appendNum('2')">2</button>
+      <button class="btn-num"  onclick="appendNum('3')">3</button>
+      <button class="btn-eq"   onclick="calculate()">=</button>
+
+      <button class="btn-num btn-zero" onclick="appendNum('0')">0</button>
+      <button class="btn-num"  onclick="appendDot()">.</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ ADMIN PANEL ═══════════════ -->
+<div id="adminOverlay">
+  <div class="admin-panel">
+    <div class="admin-header">
+      <div class="admin-title">⚙ Control Panel</div>
+      <button class="close-btn" onclick="closeAdmin()">✕</button>
+    </div>
+
+    <!-- Magic Mode Toggle -->
+    <div class="admin-row">
+      <span class="admin-label">Magic Trick Mode</span>
+      <div class="toggle-row">
+        <span class="toggle-label">Force result on =</span>
+        <label class="toggle">
+          <input type="checkbox" id="magicToggle" onchange="onMagicToggle()" />
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Force Number -->
+    <div class="admin-row">
+      <span class="admin-label">Target Force Number</span>
+      <input type="text" class="force-input" id="forceInput" placeholder="e.g. 73" maxlength="12" />
+    </div>
+
+    <!-- Save -->
+    <button class="admin-save" onclick="saveAdmin()">Save &amp; Close</button>
+
+    <!-- Quick Codes Reference -->
+    <div class="admin-row" style="margin-top:18px; margin-bottom:0;">
+      <span class="admin-label">Quick Codes (type on calc)</span>
+      <div class="admin-codes">
+        <span>9876</span> — Open this panel<br>
+        <span>1234</span> — Enable magic mode<br>
+        <span>5676</span> — Disable magic mode
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- ═══════════════ JAVASCRIPT ═══════════════ -->
+<script>
+  // ── State ──
+  let currentInput  = '0';
+  let expression    = '';
+  let shouldReset   = false;
+  let magicMode     = false;
+  let forcedResult  = '73';
+
+  // Secret codes
+  const CODE_ADMIN  = '9876';
+  const CODE_ON     = '1234';
+  const CODE_OFF    = '5676';
+
+  // ── DOM refs ──
+  const display    = document.getElementById('display');
+  const exprEl     = document.getElementById('expr');
+  const magicBadge = document.getElementById('magicBadge');
+
+  // ── Display helpers ──
+  function updateDisplay(val) {
+    display.textContent = val ?? currentInput;
+  }
+  function updateExpr(val) {
+    exprEl.textContent = val ?? expression;
+  }
+  function updateBadge() {
+    magicBadge.classList.toggle('visible', magicMode);
+  }
+
+  // ── Number input ──
+  function appendNum(n) {
+    if (currentInput === '0' || shouldReset) {
+      currentInput = n;
+      shouldReset = false;
+    } else {
+      if (currentInput.length >= 12) return; // max digits
+      currentInput += n;
+    }
+    display.classList.remove('magic-result');
+    updateDisplay();
+    checkCodes();
+  }
+
+  function appendDot() {
+    if (shouldReset) { currentInput = '0'; shouldReset = false; }
+    if (currentInput.includes('.')) return;
+    currentInput += '.';
+    updateDisplay();
+  }
+
+  // ── Operator input ──
+  function appendOp(op) {
+    const ops = ['+', '-', '*', '/'];
+    // If last char is already an operator, replace it
+    if (ops.includes(expression.slice(-1))) {
+      expression = expression.slice(0, -1) + op;
+    } else {
+      expression += currentInput + op;
+    }
+    currentInput = '0';
+    shouldReset = true;
+    display.classList.remove('magic-result');
+    updateExpr(expression);
+    updateDisplay();
+  }
+
+  // ── Clear / Backspace ──
+  function clearAll() {
+    currentInput = '0';
+    expression   = '';
+    shouldReset  = false;
+    display.classList.remove('magic-result');
+    updateDisplay();
+    updateExpr('');
+  }
+
+  function backspace() {
+    if (shouldReset) return;
+    if (currentInput.length <= 1) {
+      currentInput = '0';
+    } else {
+      currentInput = currentInput.slice(0, -1);
+    }
+    display.classList.remove('magic-result');
+    updateDisplay();
+  }
+
+  // ── Calculate ──
+  function calculate() {
+    if (!expression && currentInput === '0') return;
+
+    const fullExpr = expression + currentInput;
+    updateExpr(fullExpr + ' =');
+
+    if (magicMode) {
+      // Show forced result with flair
+      currentInput = forcedResult;
+      expression   = '';
+      shouldReset  = true;
+      display.classList.add('magic-result');
+      updateDisplay(forcedResult);
+    } else {
+      try {
+        // Safe evaluation — only allow numbers and basic operators
+        const safe = fullExpr.replace(/[^0-9+\-*/.]/g, '');
+        // eslint-disable-next-line no-new-func
+        let result = Function('"use strict"; return (' + safe + ')')();
+        if (!isFinite(result)) { result = 'Error'; }
+        else {
+          result = parseFloat(result.toFixed(10)).toString();
         }
+        currentInput = result;
+        expression   = '';
+        shouldReset  = true;
+        display.classList.remove('magic-result');
+        updateDisplay(result);
+      } catch {
+        currentInput = 'Error';
+        expression   = '';
+        shouldReset  = true;
+        updateDisplay('Error');
+      }
+    }
+  }
 
-        function appendOperator(op) {
-            shouldReset = false;
-            const lastChar = currentInput.slice(-1);
-            if (['+', '-', '*', '/'].includes(lastChar)) {
-                currentInput = currentInput.slice(0, -1) + op;
-            } else {
-                currentInput += op;
-            }
-            updateDisplay();
-        }
+  // ── Secret code detection ──
+  function checkCodes() {
+    const seq = currentInput;
+    if (seq.endsWith(CODE_ADMIN)) {
+      clearAll();
+      openAdmin();
+    } else if (seq.endsWith(CODE_ON)) {
+      magicMode = true;
+      updateBadge();
+      clearAll();
+      showToast('✦ Magic mode ON');
+    } else if (seq.endsWith(CODE_OFF)) {
+      magicMode = false;
+      updateBadge();
+      clearAll();
+      showToast('Magic mode OFF');
+    }
+  }
 
-        function clearDisplay() {
-            currentInput = '0';
-            updateDisplay();
-        }
+  // ── Admin panel ──
+  function openAdmin() {
+    document.getElementById('magicToggle').checked = magicMode;
+    document.getElementById('forceInput').value    = forcedResult;
+    document.getElementById('adminOverlay').classList.add('open');
+  }
 
+  function closeAdmin() {
+    document.getElementById('adminOverlay').classList.remove('open');
+  }
+
+  function onMagicToggle() {
+    // live preview — not saved until Save is clicked
+  }
+
+  function saveAdmin() {
+    magicMode    = document.getElementById('magicToggle').checked;
+    const val    = document.getElementById('forceInput').value.trim();
+    if (val !== '') forcedResult = val;
+    updateBadge();
+    closeAdmin();
+    showToast(magicMode ? `✦ Magic ON → ${forcedResult}` : 'Settings saved');
+  }
+
+  // ── Toast notification ──
+  let toastTimer;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+  }
+
+  // ── Close admin on overlay click ──
+  document.getElementById('adminOverlay').addEventListener('click', function(e) {
+    if (e.target === this) closeAdmin();
+  });
+
+  // ── Keyboard support ──
+  document.addEventListener('keydown', function(e) {
+    if (document.getElementById('adminOverlay').classList.contains('open')) return;
+    if ('0123456789'.includes(e.key)) appendNum(e.key);
+    else if (e.key === '.') appendDot();
+    else if (e.key === '+') appendOp('+');
+    else if (e.key === '-') appendOp('-');
+    else if (e.key === '*') appendOp('*');
+    else if (e.key === '/') { e.preventDefault(); appendOp('/'); }
+    else if (e.key === 'Enter' || e.key === '=') calculate();
+    else if (e.key === 'Backspace') backspace();
+    else if (e.key === 'Escape') clearAll();
+  });
+</script>
+</body>
+</html>
