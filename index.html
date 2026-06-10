@@ -43,20 +43,6 @@
       border: 1px solid rgba(0,200,80,0.15);
     }
 
-    .magic-badge {
-      position: absolute;
-      top: 8px;
-      left: 10px;
-      font-size: 10px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      color: #00c850;
-      opacity: 0;
-      transition: opacity 0.4s;
-      font-weight: 700;
-    }
-    .magic-badge.visible { opacity: 1; }
-
     .display-expr {
       font-size: 13px;
       color: rgba(0,200,80,0.4);
@@ -267,7 +253,6 @@
 <div class="calc-wrapper">
   <div class="calc">
     <div class="display-wrap">
-      <div class="magic-badge" id="magicBadge">✦ Magic On</div>
       <div class="display-expr" id="expr"></div>
       <div id="display">0</div>
     </div>
@@ -342,18 +327,15 @@
   let magicMode    = false;
   let forcedResult = '73';
 
-  // Secret codes — triggered on = press
   const CODE_ADMIN = '9876';
   const CODE_ON    = '1234';
   const CODE_OFF   = '5676';
 
-  const display    = document.getElementById('display');
-  const exprEl     = document.getElementById('expr');
-  const magicBadge = document.getElementById('magicBadge');
+  const display = document.getElementById('display');
+  const exprEl  = document.getElementById('expr');
 
   function updateDisplay(val) { display.textContent = val ?? currentInput; }
   function updateExpr(val)    { exprEl.textContent   = val ?? expression; }
-  function updateBadge()      { magicBadge.classList.toggle('visible', magicMode); }
 
   function appendNum(n) {
     if (currentInput === '0' || shouldReset) {
@@ -401,7 +383,6 @@
   }
 
   function calculate() {
-    // Check secret codes first — only trigger on = press
     const seq = currentInput;
     if (seq === CODE_ADMIN || seq.endsWith(CODE_ADMIN)) {
       clearAll();
@@ -410,13 +391,11 @@
     }
     if (seq === CODE_ON || seq.endsWith(CODE_ON)) {
       magicMode = true;
-      updateBadge();
       clearAll();
       return;
     }
     if (seq === CODE_OFF || seq.endsWith(CODE_OFF)) {
       magicMode = false;
-      updateBadge();
       clearAll();
       return;
     }
@@ -464,7 +443,6 @@
     magicMode = document.getElementById('magicToggle').checked;
     const val = document.getElementById('forceInput').value.trim();
     if (val !== '') forcedResult = val;
-    updateBadge();
     closeAdmin();
   }
 
