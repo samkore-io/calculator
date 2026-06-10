@@ -30,6 +30,7 @@
             height: 100vh;
             width: 100vw;
             overflow: hidden;
+            transition: background-color 0.3s ease;
         }
 
         .calculator-app {
@@ -40,7 +41,7 @@
             flex-direction: column;
             padding: 24px;
             justify-content: flex-end;
-            background-color: #000000;
+            background-color: transparent;
             position: relative;
         }
 
@@ -57,6 +58,7 @@
             white-space: nowrap;
             overflow-x: auto;
             overflow-y: hidden;
+            transition: color 0.3s ease;
         }
 
         .grid {
@@ -119,7 +121,7 @@
             letter-spacing: 0.5px;
         }
 
-        /* 👑 HIDDEN ADMIN MENU VIEW */
+        /* 👑 SECRET MENU VIEW */
         .secret-menu {
             display: none;
             position: absolute;
@@ -127,13 +129,12 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.95);
+            background-color: rgba(0, 0, 0, 0.98);
             z-index: 10;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             padding: 30px;
-            border-radius: inherit;
         }
 
         .secret-menu h2 {
@@ -211,11 +212,12 @@
             color: #00FF66;
             padding: 10px;
             border-radius: 8px;
-            width: 100px;
+            width: 120px;
             font-size: 1.2rem;
             text-align: center;
             font-weight: bold;
             user-select: text !important;
+            -webkit-user-select: text !important;
         }
 
         .close-btn {
@@ -244,7 +246,7 @@
 <body>
 
     <div class="calculator-app">
-        <!-- Control Panel Modal Overlay -->
+        <!-- Control Panel -->
         <div class="secret-menu" id="secretMenu">
             <h2>Stealth Control Panel</h2>
             
@@ -265,10 +267,10 @@
             <div class="credit">AI Engineering Co-Pilot Setup</div>
         </div>
 
-        <!-- Numeric Interface Screen -->
+        <!-- Output Display Screen -->
         <div class="display" id="display">0</div>
         
-        <!-- Keypad Input Array -->
+        <!-- Keypad Interface -->
         <div class="grid">
             <button class="action-btn" onclick="clearDisplay()">AC</button>
             <button class="action-btn" onclick="appendOperator('/')">÷</button>
@@ -294,19 +296,23 @@
             <button onclick="appendNumber('.')">.</button>
         </div>
         
-        <div class="install-tip">Calculator Engine v2.4</div>
+        <div class="install-tip">Calculator Engine v2.5</div>
     </div>
 
-    <!-- 🔮 ALL LOGIC EMBEDDED INSIDE SACRED TAGS TO AVOID EXPOSURE -->
     <script>
         const display = document.getElementById('display');
         const secretMenu = document.getElementById('secretMenu');
         const magicToggle = document.getElementById('magicToggle');
+        const magicInput = document.getElementById('magicNumberInput');
         
         let currentInput = '0';
         let shouldReset = false;
 
-        const MASTER_PASSCODE = "9876"; 
+        // 🔐 PASSCODE SETTINGS
+        const OPEN_MENU_CODE = "9876";   // Open UI Control Panel
+        const QUICK_ON_CODE = "1234";    // Secret Quick-Turn ON Trick Mode
+        const QUICK_OFF_CODE = "5676";   // Secret Quick-Turn OFF Trick Mode (Uses 5676 to dodge standard 5678 finger trails)
+
         let isMagicModeActive = true;   
         let forcedResult = "73";        
 
@@ -318,23 +324,8 @@
                 currentInput += num;
             }
             updateDisplay();
-            checkPasscode();
+            checkSecretCodes();
         }
 
         function appendOperator(op) {
             shouldReset = false;
-            const lastChar = currentInput.slice(-1);
-            if (['+', '-', '*', '/'].includes(lastChar)) {
-                currentInput = currentInput.slice(0, -1) + op;
-            } else {
-                currentInput += op;
-            }
-            updateDisplay();
-        }
-
-        function clearDisplay() {
-            currentInput = '0';
-            updateDisplay();
-        }
-
-        function deleteLast() {
