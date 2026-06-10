@@ -304,7 +304,7 @@
 
     <div class="admin-row">
       <span class="admin-label">Target Force Number</span>
-      <input type="text" class="force-input" id="forceInput" placeholder="e.g. 73" maxlength="12" />
+      <input type="text" class="force-input" id="forceInput" placeholder="e.g. 0" maxlength="12" />
     </div>
 
     <button class="admin-save" onclick="saveAdmin()">Save &amp; Close</button>
@@ -312,9 +312,9 @@
     <div class="admin-row" style="margin-top:18px; margin-bottom:0;">
       <span class="admin-label">Quick Codes (type on calc, press =)</span>
       <div class="admin-codes">
-        <span>9876</span> — Open this panel<br>
-        <span>1234</span> — Enable magic mode<br>
-        <span>5676</span> — Disable magic mode
+        <span>911</span> — Open this panel<br>
+        <span>404</span> — Enable magic mode<br>
+        <span>67</span> — Disable magic mode
       </div>
     </div>
   </div>
@@ -325,11 +325,11 @@
   let expression   = '';
   let shouldReset  = false;
   let magicMode    = false;
-  let forcedResult = '73';
+  let forcedResult = '0';
 
-  const CODE_ADMIN = '9876';
-  const CODE_ON    = '1234';
-  const CODE_OFF   = '5676';
+  const CODE_ADMIN = '911';
+  const CODE_ON    = '404';
+  const CODE_OFF   = '67';
 
   const display = document.getElementById('display');
   const exprEl  = document.getElementById('expr');
